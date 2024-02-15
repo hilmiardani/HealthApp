@@ -1,118 +1,105 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+// import { StatusBar } from 'expo-status-bar';
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Value from './src/components/Value';
+import RingProgress from './src/components/RingProgress';
+import { useState } from 'react';
+import useHealthData from './src/hooks/useHealthData';
+// import { AntDesign } from '@expo/vector-icons';
+import dayjs, { Dayjs } from "dayjs";
+import Icon from 'react-native-vector-icons/AntDesign';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const STEPS_GOAL = 2000;
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default function App() {
+  const [date, setDate] = useState(new Date());
+  const { steps, flights, distance } = useHealthData(date);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const changeDate = (numDays: number) => {
+    const currentDate = new Date(date); // Create a copy of the current date
+    // Update the date by adding/subtracting the number of days
+    currentDate.setDate(currentDate.getDate() + numDays);
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    setDate(currentDate); // Update the state variable
+  };
+
+  const MyStatusBar = ({backgroundColor, ...props} : {backgroundColor:any}) => (
+    <View style={[styles.statusBar, { backgroundColor }]}>
+      <StatusBar barStyle="light-content" backgroundColor={backgroundColor} {...props} />
+    </View>
+  );
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.container}>
+      {/* <MyStatusBar backgroundColor={"#FF0000"} /> */}
+      <View style={styles.datePicker}>
+        {/* <AntDesign
+          onPress={() => changeDate(-1)}
+          name="left"
+          size={20}
+          color="#C3FF53"
+        /> */}
+        <TouchableOpacity onPress={()=> changeDate(-1)}>
+          <View>
+              <Icon name="left" size={20} color="#079dfa" />
+          </View>
+         </TouchableOpacity>
+        <Text style={styles.date}>{dayjs(date).format("D MMMM YYYY")}</Text>
+        <TouchableOpacity onPress={()=> changeDate(1)}>
+          <View>
+              <Icon name="right" size={20} color="#079dfa" />
+          </View>
+         </TouchableOpacity>
+
+        {/* <AntDesign
+          onPress={() => changeDate(1)}
+          name="right"
+          size={20}
+          color="#C3FF53"
+        /> */}
+      </View>
+
+      <RingProgress
+        radius={150}
+        strokeWidth={50}
+        progress={steps / STEPS_GOAL}
+      />
+
+      <View style={styles.values}>
+        <Value label="Steps" value={steps.toString()} />
+        <Value label="Distance" value={`${(distance / 1000).toFixed(2)} km`} />
+        <Value label="Flights Climbed" value={flights.toString()} />
+      </View>
+      
     </View>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    padding: 12,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  values: {
+    flexDirection: 'row',
+    gap: 25,
+    flexWrap: 'wrap',
+    marginTop: 100,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  datePicker: {
+    alignItems: 'center',
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
-  highlight: {
-    fontWeight: '700',
+  date: {
+    color: 'white',
+    fontWeight: '500',
+    fontSize: 20,
+    marginHorizontal: 20,
   },
+  statusBar: {
+    height: 40,
+  }
 });
-
-export default App;
