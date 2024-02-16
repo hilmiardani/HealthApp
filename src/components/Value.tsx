@@ -14,7 +14,7 @@ const Value = ({ label, value }: ValueProps) => (
 
 const styles = StyleSheet.create({
   label: {
-    color: 'white',
+    color: 'black',
     fontSize: 20,
   },
   value: {

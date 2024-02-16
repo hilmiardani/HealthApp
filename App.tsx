@@ -31,31 +31,21 @@ export default function App() {
   return (
     <View style={styles.container}>
       {/* <MyStatusBar backgroundColor={"#FF0000"} /> */}
+      <Text style={styles.title}>
+        Health App
+      </Text>
       <View style={styles.datePicker}>
-        {/* <AntDesign
-          onPress={() => changeDate(-1)}
-          name="left"
-          size={20}
-          color="#C3FF53"
-        /> */}
         <TouchableOpacity onPress={()=> changeDate(-1)}>
           <View>
-              <Icon name="left" size={20} color="#079dfa" />
+            <Icon name="left" size={20} color="#079dfa" />
           </View>
-         </TouchableOpacity>
+        </TouchableOpacity>
         <Text style={styles.date}>{dayjs(date).format("D MMMM YYYY")}</Text>
         <TouchableOpacity onPress={()=> changeDate(1)}>
           <View>
-              <Icon name="right" size={20} color="#079dfa" />
+            <Icon name="right" size={20} color="#079dfa" />
           </View>
-         </TouchableOpacity>
-
-        {/* <AntDesign
-          onPress={() => changeDate(1)}
-          name="right"
-          size={20}
-          color="#C3FF53"
-        /> */}
+        </TouchableOpacity>
       </View>
 
       <RingProgress
@@ -77,9 +67,16 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'white',
     justifyContent: 'center',
     padding: 12,
+  },
+  title: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#079dfa',
   },
   values: {
     flexDirection: 'row',
@@ -94,7 +91,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   date: {
-    color: 'white',
+    color: 'black',
     fontWeight: '500',
     fontSize: 20,
     marginHorizontal: 20,
