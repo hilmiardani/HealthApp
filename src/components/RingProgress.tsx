@@ -17,6 +17,7 @@ const color = '#079dfa'
 
 const RingProgress = ({radius = 100, strokeWidth = 30, progress = 0.5}: RingProgressProps) => {
   const innerRadius = radius - strokeWidth / 2;
+  // The Circumference (or) perimeter of circle = 2πR
   const circumference = 2 * Math.PI * innerRadius;
 
   const fill = useSharedValue(0);
@@ -44,7 +45,7 @@ const RingProgress = ({radius = 100, strokeWidth = 30, progress = 0.5}: RingProg
           fill="transparent"
           stroke={color}
           strokeWidth={strokeWidth}
-          opacity={0.2}
+          opacity={0.4}
         />
         {/* Foreground */}
         <AnimatedCircle 
@@ -56,7 +57,7 @@ const RingProgress = ({radius = 100, strokeWidth = 30, progress = 0.5}: RingProg
           stroke={color}
           strokeWidth={strokeWidth}
           strokeDasharray={[circumference * progress, circumference]}
-          strokeLinecap="butt"
+          strokeLinecap="round"
           rotation="-90"
           originX={radius}
           originY={radius}

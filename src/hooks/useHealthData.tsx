@@ -109,6 +109,8 @@ const useHealthData = (date: Date) => {
       { accessType: 'read', recordType: 'Steps' },
       { accessType: 'read', recordType: 'Distance' },
       { accessType: 'read', recordType: 'FloorsClimbed' },
+      { accessType: 'read', recordType: 'HeartRate' },
+      { accessType: 'read', recordType: 'SleepSession' },
     ]);
 
     console.log('Granted permissions: ', grantedPermissions);
@@ -139,7 +141,26 @@ const useHealthData = (date: Date) => {
     });
     const totalFloors = floorsClimbed.reduce((sum, cur) => sum + cur.floors, 0);
     setFlights(totalFloors);
-    // console.log(floorsClimbed);
+
+    // Heart rate
+    const heartRate = await readRecords('HeartRate', { timeRangeFilter });
+    // const totalHeartRate = heartRate
+    // console.log('Total Heart Rate: ', totalHeartRate);
+
+    // Sleep
+    const sleep = await readRecords('SleepSession', { timeRangeFilter });
+    // const totalSleep = sleep
+    // console.log('Total Sleep: ', totalSleep);
+
+    // Calories Burned
+    const result = await readRecords('ActiveCaloriesBurned', { timeRangeFilter });
+    console.log('Result: ', result);
+
+    // Testing
+    readRecords('HeartRate', { timeRangeFilter }).then((result) => {
+      console.log('Retrieved records: ', JSON.stringify({ result }, null, 2)); // Retrieved records:  {"result":[{"startTime":"2023-01-09T12:00:00.405Z","endTime":"2023-01-09T23:53:15.405Z","energy":{"inCalories":15000000,"inJoules":62760000.00989097,"inKilojoules":62760.00000989097,"inKilocalories":15000},"metadata":{"id":"239a8cfd-990d-42fc-bffc-c494b829e8e1","lastModifiedTime":"2023-01-17T21:06:23.335Z","clientRecordId":null,"dataOrigin":"com.healthconnectexample","clientRecordVersion":0,"device":0}}]}
+    });
+    
   };
 
   const checkAvailability = async () => {

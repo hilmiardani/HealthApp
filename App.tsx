@@ -57,7 +57,7 @@ export default function App() {
       <View style={styles.values}>
         <Value label="Steps" value={steps.toString()} />
         <Value label="Distance" value={`${(distance / 1000).toFixed(2)} km`} />
-        <Value label="Flights Climbed" value={flights.toString()} />
+        {/* <Value label="Flights Climbed" value={flights.toString()} /> */}
       </View>
       
     </View>
@@ -66,13 +66,14 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
+    height: '100%',
     backgroundColor: 'white',
     justifyContent: 'center',
     padding: 12,
   },
   title: {
-    flex: 1,
+    marginTop: 0,
     textAlign: 'center',
     fontSize: 25,
     fontWeight: 'bold',
@@ -89,6 +90,7 @@ const styles = StyleSheet.create({
     padding: 20,
     flexDirection: 'row',
     justifyContent: 'center',
+    marginTop: 0,
   },
   date: {
     color: 'black',
