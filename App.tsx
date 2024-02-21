@@ -1,75 +1,57 @@
-// import { StatusBar } from 'expo-status-bar';
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Value from './src/components/Value';
 import RingProgress from './src/components/RingProgress';
-import { useState } from 'react';
 import useHealthData from './src/hooks/useHealthData';
-// import { AntDesign } from '@expo/vector-icons';
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from 'dayjs';
 import Icon from 'react-native-vector-icons/AntDesign';
+import SleepSessionComponent from './src/components/SleepSession';
 
 const STEPS_GOAL = 2000;
 
 export default function App() {
   const [date, setDate] = useState(new Date());
-  const { steps, flights, distance } = useHealthData(date);
+  const { steps, flights, distance, sleepSession } = useHealthData(date);
 
   const changeDate = (numDays: number) => {
-    const currentDate = new Date(date); // Create a copy of the current date
-    // Update the date by adding/subtracting the number of days
+    const currentDate = new Date(date);
     currentDate.setDate(currentDate.getDate() + numDays);
-
-    setDate(currentDate); // Update the state variable
+    setDate(currentDate);
   };
 
-  const MyStatusBar = ({backgroundColor, ...props} : {backgroundColor:any}) => (
-    <View style={[styles.statusBar, { backgroundColor }]}>
-      <StatusBar barStyle="light-content" backgroundColor={backgroundColor} {...props} />
-    </View>
-  );
-
   return (
-    <View style={styles.container}>
-      {/* <MyStatusBar backgroundColor={"#FF0000"} /> */}
-      <Text style={styles.title}>
-        Health App
-      </Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Health App</Text>
       <View style={styles.datePicker}>
-        <TouchableOpacity onPress={()=> changeDate(-1)}>
+        <TouchableOpacity onPress={() => changeDate(-1)}>
           <View>
             <Icon name="left" size={20} color="#079dfa" />
           </View>
         </TouchableOpacity>
-        <Text style={styles.date}>{dayjs(date).format("D MMMM YYYY")}</Text>
-        <TouchableOpacity onPress={()=> changeDate(1)}>
+        <Text style={styles.date}>{dayjs(date).format('D MMMM YYYY')}</Text>
+        <TouchableOpacity onPress={() => changeDate(1)}>
           <View>
             <Icon name="right" size={20} color="#079dfa" />
           </View>
         </TouchableOpacity>
       </View>
 
-      <RingProgress
-        radius={150}
-        strokeWidth={50}
-        progress={steps / STEPS_GOAL}
-      />
+      <RingProgress radius={150} strokeWidth={50} progress={steps / STEPS_GOAL} />
 
       <View style={styles.values}>
         <Value label="Steps" value={steps.toString()} />
         <Value label="Distance" value={`${(distance / 1000).toFixed(2)} km`} />
         {/* <Value label="Flights Climbed" value={flights.toString()} /> */}
       </View>
-      
-    </View>
+
+      <SleepSessionComponent sleepData={sleepSession} />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    height: '100%',
     backgroundColor: 'white',
-    justifyContent: 'center',
     padding: 12,
   },
   title: {
@@ -98,7 +80,4 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginHorizontal: 20,
   },
-  statusBar: {
-    height: 40,
-  }
 });

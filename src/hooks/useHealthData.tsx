@@ -30,6 +30,7 @@ const useHealthData = (date: Date) => {
   const [steps, setSteps] = useState(0);
   const [flights, setFlights] = useState(0);
   const [distance, setDistance] = useState(0);
+  const [sleepSession, setSleepSession] = useState<any>(null);
 
   // iOS - HealthKit
   useEffect(() => {
@@ -92,15 +93,11 @@ const useHealthData = (date: Date) => {
   }, [hasPermissions, date]);
 
   // Android - Health Connect
-  const readSampleData = async () => {
-    console.log("Trigger");
-    
+  const readSampleData = async () => {    
     // initialize the client
     const isInitialized = await initialize();
-    console.log('Initialized: ', isInitialized);
     
     if (!isInitialized) {
-      // console.log('Not initialized');
       return;
     }
 
@@ -122,6 +119,16 @@ const useHealthData = (date: Date) => {
       endTime: new Date(date.setHours(23, 59, 59, 999)).toISOString(),
     };
 
+    // const currentDate = new Date();
+    const previousDay = new Date(date);
+    previousDay.setDate(date.getDate() - 1);
+
+    const timeRangeFilterPreviousDay: TimeRangeFilter = {
+      operator: 'between',
+      startTime: new Date(previousDay.setHours(0, 0, 0, 0)).toISOString(),
+      endTime: new Date(previousDay.setHours(23, 59, 59, 999)).toISOString(),
+    };
+
     // Steps
     const steps = await readRecords('Steps', { timeRangeFilter });
     const totalSteps = steps.reduce((sum, cur) => sum + cur.count, 0);
@@ -133,6 +140,7 @@ const useHealthData = (date: Date) => {
       (sum, cur) => sum + cur.distance.inMeters,
       0
     );
+    console.log('Total Distance: ', totalDistance);
     setDistance(totalDistance);
 
     // Floors climbed
@@ -148,17 +156,18 @@ const useHealthData = (date: Date) => {
     // console.log('Total Heart Rate: ', totalHeartRate);
 
     // Sleep
-    const sleep = await readRecords('SleepSession', { timeRangeFilter });
+    const sleep = await readRecords('SleepSession', { timeRangeFilter: timeRangeFilterPreviousDay });
     // const totalSleep = sleep
-    // console.log('Total Sleep: ', totalSleep);
+    setSleepSession(sleep[0].stages || []);
+    console.log('Sleep: ', sleep);
 
     // Calories Burned
     const result = await readRecords('ActiveCaloriesBurned', { timeRangeFilter });
-    console.log('Result: ', result);
+    // console.log('Result: ', result);
 
     // Testing
-    readRecords('HeartRate', { timeRangeFilter }).then((result) => {
-      console.log('Retrieved records: ', JSON.stringify({ result }, null, 2)); // Retrieved records:  {"result":[{"startTime":"2023-01-09T12:00:00.405Z","endTime":"2023-01-09T23:53:15.405Z","energy":{"inCalories":15000000,"inJoules":62760000.00989097,"inKilojoules":62760.00000989097,"inKilocalories":15000},"metadata":{"id":"239a8cfd-990d-42fc-bffc-c494b829e8e1","lastModifiedTime":"2023-01-17T21:06:23.335Z","clientRecordId":null,"dataOrigin":"com.healthconnectexample","clientRecordVersion":0,"device":0}}]}
+    readRecords('SleepSession', { timeRangeFilter: timeRangeFilterPreviousDay }).then((result) => {
+      // console.log('Retrieved records: ', JSON.stringify({ result }, null, 2)); // Retrieved records:  {"result":[{"startTime":"2023-01-09T12:00:00.405Z","endTime":"2023-01-09T23:53:15.405Z","energy":{"inCalories":15000000,"inJoules":62760000.00989097,"inKilojoules":62760.00000989097,"inKilocalories":15000},"metadata":{"id":"239a8cfd-990d-42fc-bffc-c494b829e8e1","lastModifiedTime":"2023-01-17T21:06:23.335Z","clientRecordId":null,"dataOrigin":"com.healthconnectexample","clientRecordVersion":0,"device":0}}]}
     });
     
   };
@@ -184,8 +193,7 @@ const useHealthData = (date: Date) => {
     if (Platform.OS !== 'android') {
       return;
     }
-    console.log("Trigger from date");
-    checkAvailability();
+    // checkAvailability();
     readSampleData();
   }, [date]);
 
@@ -193,6 +201,7 @@ const useHealthData = (date: Date) => {
     steps,
     flights,
     distance,
+    sleepSession
   };
 };
 
