@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
+import dayjs from 'dayjs';
 
 interface SleepDataItem {
   stage: number;
@@ -8,13 +10,18 @@ interface SleepDataItem {
 }
 
 interface SleepSessionComponentProps {
-  sleepData: SleepDataItem[] | null; // Update type to accept null
+  sleepData: SleepDataItem[];
 }
 
 const SleepSessionComponent: React.FC<SleepSessionComponentProps> = ({ sleepData }) => {
+  const [chartData, setChartData] = useState<{ labels: string[]; datasets: { data: number[] }[] }>({
+    labels: [],
+    datasets: [{ data: [] }],
+  });
+
   const calculateTotalSleepTime = () => {
     if (!sleepData || sleepData.length === 0) {
-      return 'No sleep data available';
+      return;
     }
 
     const startTime = sleepData[0].startTime;
@@ -22,50 +29,44 @@ const SleepSessionComponent: React.FC<SleepSessionComponentProps> = ({ sleepData
     return `${startTime} - ${endTime}`;
   };
 
+  useEffect(() => {
+    // Extract labels and data from sleepData
+    const labels = sleepData.map((item) => item.startTime);
+    const data = sleepData.map((item) => item.stage);
+
+    setChartData({ labels, datasets: [{ data }] });
+  }, [sleepData]);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sleep Session</Text>
-      <Text style={styles.timeRange}>{calculateTotalSleepTime()}</Text>
-      {sleepData && sleepData.length > 0 ? (
-        sleepData.map((item, index) => (
-          <View key={index} style={styles.sleepItem}>
-            <Text>{`Stage ${item.stage}`}</Text>
-            <Text>{`${item.startTime} - ${item.endTime}`}</Text>
-          </View>
-        ))
-      ) : (
-        <Text style={styles.noData}>No sleep data available</Text>
-      )}
+    <View>
+      <Text>Sleep Stages Chart</Text>
+      <LineChart
+        data={chartData}
+        width={300}
+        height={220}
+        yAxisLabel="Stage"
+        chartConfig={{
+          backgroundColor: '#e26a00',
+          backgroundGradientFrom: '#fb8c00',
+          backgroundGradientTo: '#ffa726',
+          decimalPlaces: 0,
+          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          style: {
+            borderRadius: 16,
+          },
+        }}
+        bezier
+        style={{
+          marginVertical: 8,
+          borderRadius: 16,
+        }}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-  },
-  title: {
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  timeRange: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginVertical: 5,
-  },
-  sleepItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  noData: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginTop: 20,
-  },
+  // ... your styles
 });
 
 export default SleepSessionComponent;
