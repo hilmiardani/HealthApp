@@ -31,6 +31,8 @@ const useHealthData = (date: Date) => {
   const [flights, setFlights] = useState(0);
   const [distance, setDistance] = useState(0);
   const [sleepSession, setSleepSession] = useState<any>(null);
+  const [startSleep, setStartSleep] = useState('');
+  const [endSleep, setEndSleep] = useState('');
 
   // iOS - HealthKit
   useEffect(() => {
@@ -159,7 +161,9 @@ const useHealthData = (date: Date) => {
     const sleep = await readRecords('SleepSession', { timeRangeFilter: timeRangeFilterPreviousDay });
     // const totalSleep = sleep
     setSleepSession(sleep[0].stages || []);
-    console.log('Sleep: ', sleep);
+    setStartSleep(sleep[0].startTime);
+    setEndSleep(sleep[0].endTime);
+    // console.log('Sleep: ', sleep);
 
     // Calories Burned
     const result = await readRecords('ActiveCaloriesBurned', { timeRangeFilter });
@@ -201,7 +205,9 @@ const useHealthData = (date: Date) => {
     steps,
     flights,
     distance,
-    sleepSession
+    sleepSession,
+    startSleep,
+    endSleep
   };
 };
 

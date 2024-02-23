@@ -11,7 +11,7 @@ const STEPS_GOAL = 2000;
 
 export default function App() {
   const [date, setDate] = useState(new Date());
-  const { steps, flights, distance, sleepSession } = useHealthData(date);
+  const { steps, flights, distance, sleepSession, startSleep, endSleep } = useHealthData(date);
 
   const changeDate = (numDays: number) => {
     const currentDate = new Date(date);
@@ -44,7 +44,9 @@ export default function App() {
         {/* <Value label="Flights Climbed" value={flights.toString()} /> */}
       </View>
 
-      <SleepSessionComponent sleepData={sleepSession} />
+      <View style={{marginBottom: 50}}>
+        <SleepSessionComponent sleepData={sleepSession} />
+      </View>
     </ScrollView>
   );
 }
